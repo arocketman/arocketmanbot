@@ -45,9 +45,9 @@ public class Bot {
 	 * @return
 	 */
 	public String createMessage(String theName, String theAuthor, String theViews , String theLikes , String theDislikes){
-		String message = "Hello, I am a bot that retrieves stats and informations about youtube videos when they're posted on Reddit.\n\n";
+		String message = "Hello, I am a bot that retrieves stats and information about Youtube videos when they're posted on Reddit.\n\n";
 		message += "Created by : /u/arocketman , for malfunctioning and information refer to : https://github.com/arocketman/arocketmanbot\n\n";
-		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+		DateFormat dateFormat = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss");
 		Date date = new Date();
 		message += "**Stats retrieval on** : " + dateFormat.format(date) + "\n\n";
 		message += "**Name**: " + theName + "\n\n";
