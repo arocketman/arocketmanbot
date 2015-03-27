@@ -28,18 +28,28 @@ public class Bot {
 	public Bot(String user, String pass){
 		username = user;
 		password = pass;
-
+		
+		//Setting up the restClient
 		restClient = new HttpRestClient(); 
 		restClient.setUserAgent(Bot.USER_AGENT);
 		this.user = getUser();
 	}
-		
+	
+	/**
+	 * Builds up the message that the bot is going to post.
+	 * @param theName video name.
+	 * @param theAuthor video author.
+	 * @param theViews video views.
+	 * @param theLikes video likes.
+	 * @param theDislikes video dislikes.
+	 * @return
+	 */
 	public String createMessage(String theName, String theAuthor, String theViews , String theLikes , String theDislikes){
 		String message = "Hello, I am a bot that retrieves stats and informations about youtube videos when they're posted on Reddit.\n\n";
 		message += "Created by : /u/arocketman , for malfunctioning and information refer to : https://github.com/arocketman/arocketmanbot\n\n";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
-		message += "**Posted on** : " + dateFormat.format(date) + "\n\n";
+		message += "**Stats retrieval on** : " + dateFormat.format(date) + "\n\n";
 		message += "**Name**: " + theName + "\n\n";
 		message += "**Author**: " + theAuthor + "\n\n";
 		message += "**Views** : " + theViews + "\n\n";
@@ -48,6 +58,12 @@ public class Bot {
 		return message;
 	}
 	
+	/**
+	 * Posts the stats for a given video.
+	 * @param video The YoutubeVideo to be posted.
+	 * @param s the submission (where to be posted)
+	 * @return true if successfully posted.
+	 */
 	public boolean post(YoutubeVideo video, Submission s){
 		SubmitActions submitAction = new SubmitActions(restClient, user);
 		String message = createMessage(video.getName(), video.getAuthor(), video.getViews(), video.getLikes(), video.getDislikes());
@@ -88,6 +104,11 @@ public class Bot {
 		return restClient;
 	}
 
+	/**
+	 * Checks for wheter or not the bot did already post on a submission.
+	 * @param submissionID The submission to check for.
+	 * @return true if already posted.
+	 */
 	public boolean alreadyPosted(String submissionID) {
 		Comments coms = new Comments(restClient, user);
 		List<Comment> commentsUser = coms.ofUser(this.username, UserOverviewSort.NEW, TimeSpan.ALL, -1, 80, null, null, true);
