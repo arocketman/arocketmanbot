@@ -15,12 +15,9 @@ public class Main {
 	
 	public static void main(String[] args) {
 
-		Bot arocketmanbot = new Bot("arocketmanbot","pass");
+		Bot arocketmanbot = new Bot("arocketmanbot","s");
 		
-		RestClient restClient = arocketmanbot.getRestClient();
-		User user = arocketmanbot.getUser(restClient);
-		
-		Submissions submissions = new Submissions(restClient);
+		Submissions submissions = new Submissions(arocketmanbot.getRestClient());
 		
 		//TODO: Edit with the 'bot' parameters later.
 		List<Submission> submissionsSubreddit = submissions.ofSubreddit(Bot.SUBREDDIT, SubmissionSort.RISING, -1, 5, null, null, true);
@@ -30,7 +27,8 @@ public class Main {
 				//Getting video information
 				YoutubeVideo video = new YoutubeVideo(s.getUrl());
 				//TODO: MAKE SURE IT DOESN'T POST TWICE ON THE SAME SUBMISSION.
-				arocketmanbot.post(restClient, user, video, s);
+				if(!arocketmanbot.alreadyPosted(s.getFullName()))
+					arocketmanbot.post(video, s);
 			}
 		}
 		

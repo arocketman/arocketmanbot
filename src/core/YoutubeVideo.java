@@ -8,7 +8,8 @@ import org.jsoup.select.Elements;
 
 public class YoutubeVideo {
 
-
+	//https://www.googleapis.com/youtube/v3/videos?id=_76lPzXf8To&key=AIzaSyAy6jdXarVv3t_QAOd3cu9zEhGbWZcQ9Rw&part=snippet
+	
 	private String Name;
 	private String Url;
 	private String Author;

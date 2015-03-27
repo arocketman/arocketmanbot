@@ -3,10 +3,15 @@ package core;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.List;
 
 import com.github.jreddit.action.SubmitActions;
+import com.github.jreddit.entity.Comment;
 import com.github.jreddit.entity.Submission;
 import com.github.jreddit.entity.User;
+import com.github.jreddit.retrieval.Comments;
+import com.github.jreddit.retrieval.params.TimeSpan;
+import com.github.jreddit.retrieval.params.UserOverviewSort;
 import com.github.jreddit.utils.restclient.HttpRestClient;
 import com.github.jreddit.utils.restclient.RestClient;
 
@@ -17,15 +22,21 @@ public class Bot {
 	
 	private String username;
 	private String password;
+	private RestClient restClient;
+	private User user;
 	
 	public Bot(String user, String pass){
 		username = user;
 		password = pass;
+
+		restClient = new HttpRestClient(); 
+		restClient.setUserAgent(Bot.USER_AGENT);
+		this.user = getUser();
 	}
 		
 	public String createMessage(String theName, String theAuthor, String theViews , String theLikes , String theDislikes){
 		String message = "Hello, I am a bot that retrieves stats and informations about youtube videos when they're posted on Reddit.\n\n";
-		message += "Created by : /u/arocketman , for malfunctioning and information refer to : https://github.com/arocketman\n\n";
+		message += "Created by : /u/arocketman , for malfunctioning and information refer to : https://github.com/arocketman/arocketmanbot\n\n";
 		DateFormat dateFormat = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
 		Date date = new Date();
 		message += "**Posted on** : " + dateFormat.format(date) + "\n\n";
@@ -37,7 +48,7 @@ public class Bot {
 		return message;
 	}
 	
-	public boolean post(RestClient restClient, User user, YoutubeVideo video, Submission s){
+	public boolean post(YoutubeVideo video, Submission s){
 		SubmitActions submitAction = new SubmitActions(restClient, user);
 		String message = createMessage(video.getName(), video.getAuthor(), video.getViews(), video.getLikes(), video.getDislikes());
 		if(submitAction.comment(s.getFullName(), message)){
@@ -57,7 +68,7 @@ public class Bot {
 	 * @param restClient the restClient needed for the User constructor.
 	 * @return the Bot User.
 	 */
-	public User getUser(RestClient restClient) {
+	public User getUser() {
 		// Connect the user 
 		User user = new User(restClient, username, password);
 		try {
@@ -74,8 +85,16 @@ public class Bot {
 	 * @return the restClient for the bot
 	 */
 	public RestClient getRestClient(){
-		RestClient restClient = new HttpRestClient(); 
-		restClient.setUserAgent(Bot.USER_AGENT);
 		return restClient;
+	}
+
+	public boolean alreadyPosted(String submissionID) {
+		Comments coms = new Comments(restClient, user);
+		List<Comment> commentsUser = coms.ofUser(this.username, UserOverviewSort.NEW, TimeSpan.ALL, -1, 80, null, null, true);
+		for(Comment comment : commentsUser){
+			if(comment.getParentId().equals(submissionID)) 
+				return true;
+		}
+		return false;
 	}
 }
