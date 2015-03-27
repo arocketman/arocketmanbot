@@ -110,12 +110,33 @@ public class Bot {
 	 * @return true if already posted.
 	 */
 	public boolean alreadyPosted(String submissionID) {
-		Comments coms = new Comments(restClient, user);
-		List<Comment> commentsUser = coms.ofUser(this.username, UserOverviewSort.NEW, TimeSpan.ALL, -1, 80, null, null, true);
-		for(Comment comment : commentsUser){
+		List<Comment> myComments = getMyComments();
+		for(Comment comment : myComments){
 			if(comment.getParentId().equals(submissionID)) 
 				return true;
 		}
 		return false;
+	}
+
+	public void deleteNegativeComments() {
+		List<Comment> myComments = getMyComments();
+		for(Comment comment : myComments){
+			if(comment.getScore() <= -1){
+				if(deleteComment(comment.getFullName()))
+					System.out.println("I deleted my comment on : " + comment.getParentId());
+			}
+		}
+	}
+	
+	private boolean deleteComment(String commentId){
+		SubmitActions submitActions = new SubmitActions(restClient, user);
+		System.out.println(commentId);
+		return submitActions.delete(commentId);
+	}
+	
+	private List<Comment> getMyComments(){
+		Comments coms = new Comments(restClient, user);
+		List<Comment> commentsUser = coms.ofUser(this.username, UserOverviewSort.NEW, TimeSpan.ALL, -1, 80, null, null, true);
+		return commentsUser;
 	}
 }

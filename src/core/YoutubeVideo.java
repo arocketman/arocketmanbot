@@ -7,8 +7,6 @@ import org.jsoup.nodes.Document;
 import org.jsoup.select.Elements;
 
 public class YoutubeVideo {
-
-	//https://www.googleapis.com/youtube/v3/videos?id=_76lPzXf8To&key=AIzaSyAy6jdXarVv3t_QAOd3cu9zEhGbWZcQ9Rw&part=snippet
 	
 	private String Name;
 	private String Url;
@@ -30,46 +28,40 @@ public class YoutubeVideo {
 		Url = videoURL;
 		Author = getAuthorFromDoc();
 		views = getViewsFromDoc();
-		likes = getLikesFromDoc();
-		dislikes = getDislikesFromDoc();
+		likes = getLikesDislikes("#watch-like");
+		dislikes = getLikesDislikes("#watch-dislike");
 	}
 	
+	/**
+	 * Gets the author of the video searching the DOM.
+	 * @return
+	 */
 	private String getAuthorFromDoc(){
-		Elements resultLinks = doc.select("div.yt-user-info a"); // direct a after h3
+		Elements resultLinks = doc.select("div.yt-user-info a"); 
 		return resultLinks.text();
 	}
 	
+	/**
+	 * Gets the number of views of the video searching the DOM.
+	 * @return
+	 */
 	private String getViewsFromDoc(){
-		Elements resultLinks = doc.select("div.watch-view-count"); // direct a after h3
+		Elements resultLinks = doc.select("div.watch-view-count"); 
 		return resultLinks.text();
 	}
 	
-	private String getLikesFromDoc(){
-		Elements resultLinks = doc.select("#watch-like"); // direct a after h3
+	/**
+	 * Gets likes/dislikes based on the div ID . Scrapes the DOM.
+	 * @param divID the div ID for the like/dislike button
+	 * @return the amount of likes/dislikes
+	 */
+	private String getLikesDislikes(String divID){
+		Elements resultLinks = doc.select(divID); 
 		String tempLikes = resultLinks.text();
 		String likes = tempLikes.split("\\s")[0];
 		return likes;
 	}
-	
-	private String getDislikesFromDoc(){
-		Elements resultLinks = doc.select("#watch-dislike"); // direct a after h3
-		String tempLikes = resultLinks.text();
-		String dislikes = tempLikes.split("\\s")[0];
-		return dislikes;
-	}
-	
-	/*private String getVideoNameFromSubmission(Submission s){
-		try {
-			Document doc = Jsoup.connect(s.getUrl()).get();
-			return doc.title();
-		} catch (IOException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
-		return null;
-	}
-	*/
-	
+		
 	public String getName() {
 		return Name;
 	}
